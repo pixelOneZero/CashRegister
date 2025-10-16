@@ -32,7 +32,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
@@ -44,9 +43,7 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Error Display */}
         {error && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
             <div className="flex">
@@ -65,7 +62,6 @@ function App() {
           </div>
         )}
 
-        {/* File Processing */}
         <div className="space-y-8">
           <FileProcessor onResults={handleFileResults} onError={handleError} />
           {fileResults && <FileResults results={fileResults} onDownload={handleDownloadFileResults} />}

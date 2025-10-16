@@ -9,7 +9,6 @@ import io
 from .models import Locale
 from .change_calculator import ChangeCalculator
 
-# Initialize FastAPI app
 app = FastAPI(
     title="Cash Register API",
     description="A cash register system with dynamic programming optimization for minimum change and random change generation based on divisor with no remainder.",
@@ -18,7 +17,6 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # React dev server
@@ -72,15 +70,10 @@ async def process_flat_file(
     Returns formatted change strings, one per line
     """
     try:
-        # Read file content
         content = await file.read()
         file_content = content.decode('utf-8')
-        
-        # Parse CSV lines
         lines = file_content.strip().split('\n')
         results = []
-        
-        # Initialize calculator
         calculator = ChangeCalculator(locale)
         
         for line_num, line in enumerate(lines, 1):
@@ -89,7 +82,6 @@ async def process_flat_file(
                 continue
                 
             try:
-                # Parse amount_owed,amount_paid
                 parts = line.split(',')
                 if len(parts) != 2:
                     results.append(f"Line {line_num}: Invalid format - expected 'amount_owed,amount_paid'")
@@ -98,24 +90,20 @@ async def process_flat_file(
                 amount_owed = float(parts[0].strip())
                 amount_paid = float(parts[1].strip())
                 
-                # Validate payment
                 if amount_paid < amount_owed:
                     results.append(f"Line {line_num}: Insufficient payment")
                     continue
                 
-                # Calculate change
                 change_cents = calculator.get_change_amount_cents(amount_owed, amount_paid)
                 
                 if change_cents == 0:
                     results.append("No change")
                     continue
                 
-                # Calculate denominations
                 denominations, is_random = calculator.calculate_change(
                     amount_owed, amount_paid, divisor
                 )
                 
-                # Format change string
                 formatted_change = calculator.format_change_string(denominations)
                 results.append(formatted_change)
                 
@@ -124,7 +112,6 @@ async def process_flat_file(
             except Exception as e:
                 results.append(f"Line {line_num}: Error - {str(e)}")
         
-        # Return results as plain text, one per line
         return '\n'.join(results)
         
     except Exception as e:
@@ -143,15 +130,10 @@ async def process_flat_file_detailed(
     Returns structured data with change calculations for each line
     """
     try:
-        # Read file content
         content = await file.read()
         file_content = content.decode('utf-8')
-        
-        # Parse CSV lines
         lines = file_content.strip().split('\n')
         results = []
-        
-        # Initialize calculator
         calculator = ChangeCalculator(locale)
         
         for line_num, line in enumerate(lines, 1):
@@ -160,7 +142,6 @@ async def process_flat_file_detailed(
                 continue
                 
             try:
-                # Parse amount_owed,amount_paid
                 parts = line.split(',')
                 if len(parts) != 2:
                     results.append({
@@ -174,7 +155,6 @@ async def process_flat_file_detailed(
                 amount_owed = float(parts[0].strip())
                 amount_paid = float(parts[1].strip())
                 
-                # Validate payment
                 if amount_paid < amount_owed:
                     results.append({
                         "line_number": line_num,
@@ -184,7 +164,6 @@ async def process_flat_file_detailed(
                     })
                     continue
                 
-                # Calculate change
                 change_cents = calculator.get_change_amount_cents(amount_owed, amount_paid)
                 
                 if change_cents == 0:
@@ -200,12 +179,10 @@ async def process_flat_file_detailed(
                     })
                     continue
                 
-                # Calculate denominations
                 denominations, is_random = calculator.calculate_change(
                     amount_owed, amount_paid, divisor
                 )
                 
-                # Format change string
                 formatted_change = calculator.format_change_string(denominations)
                 
                 results.append({
