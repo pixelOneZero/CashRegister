@@ -30,7 +30,6 @@ USD_DENOMINATIONS = [
     CurrencyDenomination(1000, "ten dollar bill", "ten dollar bills"),              # $10
     CurrencyDenomination(500, "five dollar bill", "five dollar bills"),             # $5
     CurrencyDenomination(100, "dollar", "dollars"),                                 # $1
-    CurrencyDenomination(50, "half dollar", "half dollars"),                        # $0.50
     CurrencyDenomination(25, "quarter", "quarters"),                                # $0.25
     CurrencyDenomination(10, "dime", "dimes"),                                      # $0.10
     CurrencyDenomination(5, "nickel", "nickels"),                                   # $0.05
@@ -46,7 +45,6 @@ EUR_DENOMINATIONS = [
     CurrencyDenomination(500, "five euro bill", "five euro bills"),                 # €5
     CurrencyDenomination(200, "two euro coin", "two euro coins"),                   # €2
     CurrencyDenomination(100, "euro", "euros"),                                     # €1
-    CurrencyDenomination(50, "fifty cent coin", "fifty cent coins"),                # €0.50
     CurrencyDenomination(20, "twenty cent coin", "twenty cent coins"),              # €0.20
     CurrencyDenomination(10, "ten cent coin", "ten cent coins"),                    # €0.10
     CurrencyDenomination(5, "five cent coin", "five cent coins"),                   # €0.05

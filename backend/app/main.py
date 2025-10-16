@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from typing import List
@@ -6,9 +6,7 @@ import uvicorn
 import csv
 import io
 
-from .models import (
-    ChangeRequest, ChangeResponse, Locale
-)
+from .models import Locale
 from .change_calculator import ChangeCalculator
 
 # Initialize FastAPI app
@@ -47,68 +45,6 @@ async def health_check():
     return {"status": "healthy"}
 
 
-@app.post("/calculate-change", response_model=ChangeResponse)
-async def calculate_change(request: ChangeRequest):
-    """
-    Calculate change for a single transaction
-    
-    - **amount_owed**: Amount owed by customer
-    - **amount_paid**: Amount paid by customer
-    - **locale**: Currency locale (en-US, fr-FR)
-    - **divisor**: Divisor for random change generation (default: 3)
-    """
-    # Validate payment
-    if request.amount_paid < request.amount_owed:
-        raise HTTPException(
-            status_code=400, 
-            detail="Insufficient payment amount"
-        )
-    
-    try:
-        # Initialize calculator
-        calculator = ChangeCalculator(request.locale.value)
-        
-        # Calculate change
-        change_cents = calculator.get_change_amount_cents(
-            request.amount_owed, request.amount_paid
-        )
-        
-        if change_cents == 0:
-            return ChangeResponse(
-                change_amount=0.0,
-                change_cents=0,
-                denominations={},
-                formatted_change="No change",
-                is_random=False,
-                locale=request.locale
-            )
-        
-        # Calculate denominations
-        denominations, is_random = calculator.calculate_change(
-            request.amount_owed, 
-            request.amount_paid, 
-            request.divisor
-        )
-        
-        # Format change string
-        formatted_change = calculator.format_change_string(denominations)
-        
-        return ChangeResponse(
-            change_amount=change_cents / 100.0,
-            change_cents=change_cents,
-            denominations=denominations,
-            formatted_change=formatted_change,
-            is_random=is_random,
-            locale=request.locale
-        )
-        
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-
-
-
 
 @app.get("/supported-locales")
 async def get_supported_locales():
@@ -122,8 +58,8 @@ async def get_supported_locales():
 @app.post("/process-file", response_class=PlainTextResponse)
 async def process_flat_file(
     file: UploadFile = File(...),
-    locale: Locale = Locale.EN_US,
-    divisor: int = 3
+    locale: str = Form("en-US"),
+    divisor: int = Form(3)
 ):
     """
     Process a flat file with transaction data
@@ -145,7 +81,7 @@ async def process_flat_file(
         results = []
         
         # Initialize calculator
-        calculator = ChangeCalculator(locale.value)
+        calculator = ChangeCalculator(locale)
         
         for line_num, line in enumerate(lines, 1):
             line = line.strip()
@@ -198,8 +134,8 @@ async def process_flat_file(
 @app.post("/process-file-detailed")
 async def process_flat_file_detailed(
     file: UploadFile = File(...),
-    locale: Locale = Locale.EN_US,
-    divisor: int = 3
+    locale: str = Form("en-US"),
+    divisor: int = Form(3)
 ):
     """
     Process a flat file with detailed results
@@ -216,7 +152,7 @@ async def process_flat_file_detailed(
         results = []
         
         # Initialize calculator
-        calculator = ChangeCalculator(locale.value)
+        calculator = ChangeCalculator(locale)
         
         for line_num, line in enumerate(lines, 1):
             line = line.strip()

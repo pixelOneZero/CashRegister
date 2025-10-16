@@ -129,7 +129,7 @@ class ChangeCalculator:
                 plural_name = self.denomination_names[coin_value][1]
                 parts.append(f"{count} {plural_name}")
         
-        return ", ".join(parts)
+        return ",".join(parts)
     
     def get_change_amount_cents(self, amount_owed: float, amount_paid: float) -> int:
         """Get change amount in cents"""

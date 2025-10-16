@@ -168,8 +168,19 @@ const FileProcessor: React.FC<FileProcessorProps> = ({ onResults, onError }) => 
             type="number"
             id="divisor"
             value={divisor}
-            onChange={(e) => setDivisor(parseInt(e.target.value) || 3)}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === '') {
+                setDivisor(3); // Reset to default when cleared
+              } else {
+                const parsed = parseInt(value);
+                if (!isNaN(parsed) && parsed >= 1) {
+                  setDivisor(parsed);
+                }
+              }
+            }}
             min="1"
+            placeholder="3"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>

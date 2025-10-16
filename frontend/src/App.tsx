@@ -1,21 +1,10 @@
 import React, { useState } from 'react';
-import TransactionForm from './components/TransactionForm';
-import ChangeResult from './components/ChangeResult';
 import FileProcessor from './components/FileProcessor';
 import FileResults from './components/FileResults';
-import { ChangeResponse } from './types';
 
 function App() {
-  const [singleResult, setSingleResult] = useState<ChangeResponse | null>(null);
   const [fileResults, setFileResults] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'file' | 'single'>('file');
-
-  const handleSingleResult = (result: ChangeResponse) => {
-    setSingleResult(result);
-    setError(null);
-  };
-
 
   const handleFileResults = (results: string) => {
     setFileResults(results);
@@ -24,7 +13,6 @@ function App() {
 
   const handleError = (errorMessage: string) => {
     setError(errorMessage);
-    setSingleResult(null);
     setFileResults(null);
   };
 
@@ -58,34 +46,6 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tab Navigation */}
-        <div className="mb-8">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              <button
-                onClick={() => setActiveTab('file')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'file'
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                File Processing
-              </button>
-              <button
-                onClick={() => setActiveTab('single')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'single'
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Single Transaction
-              </button>
-            </nav>
-          </div>
-        </div>
-
         {/* Error Display */}
         {error && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
@@ -105,21 +65,11 @@ function App() {
           </div>
         )}
 
-        {/* File Processing Tab */}
-        {activeTab === 'file' && (
-          <div className="space-y-8">
-            <FileProcessor onResults={handleFileResults} onError={handleError} />
-            {fileResults && <FileResults results={fileResults} onDownload={handleDownloadFileResults} />}
-          </div>
-        )}
-
-        {/* Single Transaction Tab */}
-        {activeTab === 'single' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <TransactionForm onResult={handleSingleResult} onError={handleError} />
-            {singleResult && <ChangeResult result={singleResult} />}
-          </div>
-        )}
+        {/* File Processing */}
+        <div className="space-y-8">
+          <FileProcessor onResults={handleFileResults} onError={handleError} />
+          {fileResults && <FileResults results={fileResults} onDownload={handleDownloadFileResults} />}
+        </div>
       </main>
     </div>
   );
